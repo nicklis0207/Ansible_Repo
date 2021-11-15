@@ -1,0 +1,9 @@
+[proxy]
+ansible2.hl.local ansible_host=192.168.148.51
+
+[webservers]
+ansible3.hl.local ansible_host=192.168.148.52
+ansible4.hl.local ansible_host=192.168.148.53
+
+[database]
+ansible5.hl.local ansible_host=192.168.148.54

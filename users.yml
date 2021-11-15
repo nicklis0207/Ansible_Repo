@@ -1,0 +1,66 @@
+---
+
+- name: Users and Groups
+  hosts: webservers
+  become: yes
+  
+  vars_files:
+    - secret.yml
+    - /home/automation/plays/vars/user_list.yml
+
+  tasks:
+
+  - name: Create users whose user ID starts with 1 
+    user:
+      name: "{{ item.username }}"
+      comment: "imma webserver user"
+      shell: /bin/bash
+      uid: "{{ item.uid }}"
+      groups: wheel
+      append: yes
+      password: "{{ user_password | password_hash('sha512') }}"
+      update_password: on_create
+    when: item.uid > 1000 and item.uid < 2000
+    loop: "{{ users }}"
+
+
+- name: Users and Groups
+  hosts: database
+  become: yes
+
+  vars_files:
+    - secret.yml
+    - /home/automation/plays/vars/user_list.yml
+
+  tasks:
+
+  - name: Create users whose user ID starts with 2
+    user:
+      name: "{{ item.username }}"
+      comment: "imma database user"
+      shell: /bin/bash
+      uid: "{{ item.uid }}"
+      groups: wheel
+      append: yes
+      password: "{{ user_password | password_hash('sha512') }}"
+      update_password: on_create
+    when: item.uid > 2000 and item.uid < 3000
+    loop: "{{ users }}"
+
+
+- name: Upload ssh key
+  hosts: webservers, database
+  become: yes
+
+  vars_files:
+    - secret.yml
+    - /home/automation/plays/vars/user_list.yml
+
+  tasks:
+
+  - name: Upload ssh key
+    authorized_key:
+      user: "{{ item.username }}"
+      key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+      state: present
+    loop: "{{ users }}"

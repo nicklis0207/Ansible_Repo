@@ -1,0 +1,24 @@
+---
+- name: Use archive
+  hosts: database
+  become: yes
+  tasks:
+
+    - name: Create the needed directory
+      file:
+        path: /mnt/mysql_backups
+        state: directory
+
+    - name: Create file in /mnt/mysql_backups with content
+      copy:
+        dest: /mnt/mysql_backups/database_list.txt
+        content: 'dev,test,qa,prod'
+
+    - name: Create a gzip of /mnt/mysql_backups/database_list.txt
+      archive:
+        path: /mnt/mysql_backups/database_list.txt
+        dest: /mnt/mysql_backups/archive.gz
+        format: gz
+
+        
+

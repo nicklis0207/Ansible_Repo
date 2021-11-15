@@ -1,0 +1,25 @@
+---
+- hosts: proxy
+  become: yes
+  tasks:
+     - name: Message in proxy 
+       ansible.builtin.copy:
+         content: Welcome to HAProxy server
+         dest: /etc/motd
+
+
+- hosts: database
+  become: yes
+  tasks:
+     - name: Message in database
+       ansible.builtin.copy:
+         content: Welcome to MySQL server
+         dest: /etc/motd
+
+- hosts: webservers
+  become: yes
+  tasks:
+     - name: Message in webservers
+       ansible.builtin.copy:
+         content: Welcome to Apache server
+         dest: /etc/motd

@@ -1,0 +1,6 @@
+---
+- name: Create and Work with Roles (Some More)
+  hosts: webservers
+  become: yes
+  roles:
+    - sample-apache

@@ -1,0 +1,19 @@
+---
+- name: Work with ansible Facts
+  hosts: database
+  become: yes
+  tasks:
+
+    - name: Create fact directory on managed hosts
+      file:
+        path: /etc/ansible/facts.d/
+        state: directory
+
+     
+    - name: Create a static custom fact foo
+      copy:
+        content: '"server_role = mysql"'
+        dest: /etc/ansible/facts.d/custom.sample_exam.fact
+
+# TO VERIFY CUSTOM FACTS INSTALLATION RUN -> 
+# ansible database -m setup -a "filter=ansible_local"

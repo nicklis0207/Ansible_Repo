@@ -1,0 +1,85 @@
+---
+- name: LAST ANSIBLE PLAY
+  hosts: webservers[0]
+  become: yes
+  tasks:
+
+   # - name: First create the physical volume - pv on whech the vgans01 will lay
+      
+   - name: Make sure lvm is installed on machines
+     yum:
+       name: 'lvm*'
+       state: present
+
+
+   - name: Create a primary partition for lvm
+     parted:
+       device: "{{ item }}"
+       number: 1
+       flags: [ lvm ]
+       state: present
+     loop:
+       - /dev/sdb
+       - /dev/sdc
+
+
+   - name: Create a volume group on top of /dev/sdb and /dev/sdc
+     lvg:
+       vg: vgans01
+       pvs: /dev/sdb1,/dev/sdc1
+
+
+   - name: Create a logical volume on top of vgans01
+     lvol:
+       vg: vgans01
+       lv: lvans01
+       size: 15g
+
+
+   - name: Create a logical volume on top of vgans01
+     lvol:
+       vg: vgans01
+       lv: lvans02
+       size: 15g
+
+
+   - name: Create xfs filesystem on lvans01
+     filesystem:
+       fstype: xfs
+       dev: /dev/vgans01/lvans01
+
+
+   - name: Create xfs filesystem on lvans02
+     filesystem:
+       fstype: xfs
+       dev: /dev/vgans01/lvans02
+
+
+   - name: Create directory dir01 for the  mount
+     file:
+       path: /mnt/dir01
+       state: directory
+       mode : '0755'
+
+
+   - name: Create directory dir02 for the  mount
+     file:
+       path: /mnt/dir02
+       state: directory
+       mode : '0755'
+
+
+   - name: Mount lvans01 on /mnt/dir01
+     mount:
+       path: /mnt/dir01
+       src: /dev/vgans01/lvans01
+       fstype: xfs
+       state: mounted
+
+
+   - name: Mount lvans02 on /mnt/dir02
+     mount:
+       path: /mnt/dir02
+       src: /dev/vgans01/lvans02
+       fstype: xfs
+       state: mounted

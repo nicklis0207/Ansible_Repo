@@ -1,0 +1,7 @@
+---
+- name: Create and work with Roles
+  hosts: database
+  vars_files:
+    - secret.yml 
+  roles:
+    - sample-mysql

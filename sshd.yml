@@ -1,0 +1,27 @@
+---
+
+- name: Configure SSH Server
+  hosts: all
+  become: yes
+  tasks:
+
+  - name: Set banner to /etc/motd
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "^#Banner"
+      line: Banner /etc/motd
+
+
+  - name: Set X11Forwarding on disabled
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "^X11Forwarding"
+      line: X11Forwarding no
+
+
+  - name: Set MaxAuthTries to 3
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "^#MaxAuthTries"
+      line: MaxAuthTries 3
+

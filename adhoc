@@ -1,0 +1,21 @@
+!# /bin/bash
+
+#User automation is created on all hosts
+
+ansible all -m ansible.builtin.user -a "name=automation password='$6$U5o4Sx6K$Y3ngUADxwSenNPELhO61LvWYZeXhAf3A7xkou3Qb8ReHXt9zJOUyYYjKLKl80gWaeG7tlwF4zTrRfT5vXoV9s/'" -u root
+
+
+#Creation of /home/automation/.ssh/authorized_keys on all hosts
+
+ansible all -m ansible.builtin.file -a "dest=/home/automation/.ssh/ mode=700 owner=automation group=automation state=directory" -u root
+
+
+#SSH key is copied to all hosts for the automation user
+
+ansible all -m ansible.builtin.copy -a "src=/home/automation/.ssh/id_rsa.pub dest=/home/automation/.ssh/authorized_keys mode=600 owner=automation group=automation" -u root
+
+
+#The automation user is allowed to elevate privileges on all hosts without having to provide a password.
+
+ansible all -m ansible.builtin.shell -a "grep -qxF 'automation  ALL=(ALL)  NOPASSWD: ALL' /etc/sudoers || echo 'automation  ALL=(ALL)  NOPASSWD: ALL' >> /etc/sudoers" -u root
+

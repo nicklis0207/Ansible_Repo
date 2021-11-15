@@ -1,0 +1,13 @@
+---
+- name: Services
+  hosts: webservers
+  become: yes
+  tasks:
+
+#TRIED TO DO WITH THE MODULE FILE BUT DIDNT WORK
+
+    - name: Delete the current default runlevel
+      command: rm -f /etc/systemd/system/default.target
+
+    - name: Set default boot target to multi-user
+      command: ln -s /lib/systemd/system/multi-user.target /etc/systemd/system/default.target

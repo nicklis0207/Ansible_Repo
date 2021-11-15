@@ -1,0 +1,11 @@
+---
+- name: Create cron job
+  hosts: proxy
+  become: yes
+  tasks:
+
+    - cron:
+        name: Append date to time.log
+        user: root
+        special_time: hourly
+        job: "echo $(date) >> /var/log/time.log"

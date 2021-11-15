@@ -1,0 +1,45 @@
+---
+# tasks file for sample-apache
+
+- name: Install httpd, mod_ssl and php packages
+  yum:
+    name:
+      - httpd
+      - mod_ssl
+      - php
+    state: present
+
+
+- name: Apache service is running and enabled on boot
+  service:
+    name: httpd
+    state: started
+    enabled: yes 
+
+
+- name: Firewall allow allincoming traffic on HTTP port TCP 80
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+
+
+- name: Firewall allow allincoming traffic on HTTPS port TCP 443
+  firewalld:
+    port: 443/tcp
+    permanent: true
+    state: enabled
+
+
+- name: Create index.html file out of index.html.j2 template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  register: index_conf
+
+
+- name: restart Apache service when index.html is modified
+  service:
+    name: httpd
+    state: restarted
+  when: index_conf.changed

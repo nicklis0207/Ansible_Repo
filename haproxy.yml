@@ -1,0 +1,48 @@
+---
+- name: Download Roles From Ansible Galaxy and Use Them
+  hosts: proxy
+  become: yes
+
+  tasks:
+
+#     - name: Firewall allow allincoming traffic on HTTP port TCP 80
+#       firewalld:
+#         port: 80/tcp
+#         permanent: true
+#         state: enabled
+#         immediate: yes
+
+    - name: Firewalld enable http + https
+      firewalld:
+        service: "{{ item }}"
+        state: enabled
+        immediate: yes
+        permanent: yes
+      loop:
+        - http
+        - https
+        
+
+    - name: Restart firewalld service
+      systemd:
+        name: firewalld
+        state: restarted
+
+  roles:
+    - geerlingguy.haproxy
+  
+  vars:
+    - haproxy_frontend_port: 80
+    - haproxy_frontend_mode: http
+
+    - haproxy_backend_mode: http
+    - haproxy_backend_balance_method: roundrobin
+
+    - haproxy_backend_httpchk: ''
+
+    - haproxy_backend_servers:
+        - name: app1
+          address: 192.168.148.52:80
+        - name: app2
+          address: 192.168.148.53:80
+
